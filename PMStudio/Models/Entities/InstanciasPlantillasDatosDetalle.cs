@@ -10,10 +10,10 @@ namespace PMStudio.Models.Entities
             PasosInstanciasDatosDetalle = new HashSet<PasosInstanciasDatosDetalle>();
         }
 
-        public decimal Instanciaplantilla { get; set; }
+        public int IdInstanciaPlantillaDato { get; set; }
+        public int Instanciaplantilla { get; set; }
         public string NombreCampo { get; set; }
         public string Dato { get; set; }
-        public decimal IdInstanciaPlantillaDato { get; set; }
 
         public virtual InstanciasPlantillas InstanciaplantillaNavigation { get; set; }
         public virtual ICollection<PasosInstanciasDatosDetalle> PasosInstanciasDatosDetalle { get; set; }

@@ -10,9 +10,9 @@ namespace PMStudio.Models.Entities
             Usuarios = new HashSet<Usuarios>();
         }
 
-        public decimal IdRango { get; set; }
+        public int IdRango { get; set; }
         public string Nombre { get; set; }
-        public decimal Nivel { get; set; }
+        public int Nivel { get; set; }
 
         public virtual ICollection<Usuarios> Usuarios { get; set; }
     }

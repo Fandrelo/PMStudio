@@ -13,7 +13,7 @@ namespace PMStudio.Models.Entities
 
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
-        public decimal IdPasoinstancia { get; set; }
+        public int IdPasoinstancia { get; set; }
 
         public virtual ICollection<InstanciasPlantillasPasosDetalle> InstanciasPlantillasPasosDetalle { get; set; }
         public virtual ICollection<PasosInstanciasDatosDetalle> PasosInstanciasDatosDetalle { get; set; }

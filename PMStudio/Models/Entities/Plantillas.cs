@@ -11,7 +11,7 @@ namespace PMStudio.Models.Entities
             PlantillasPasosDetalle = new HashSet<PlantillasPasosDetalle>();
         }
 
-        public decimal IdPlantilla { get; set; }
+        public int IdPlantilla { get; set; }
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
 

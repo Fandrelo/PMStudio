@@ -6,10 +6,10 @@ namespace PMStudio.Models.Entities
 {
     public partial class PasosUsuariosDetalle
     {
-        public decimal PlantillaPasoDetalle { get; set; }
-        public decimal Usuario { get; set; }
+        public int PlantillaPasoDetalle { get; set; }
+        public int Usuario { get; set; }
         public string AspNetUser { get; set; }
-        public decimal IdPasosUsuarios { get; set; }
+        public int IdPasosUsuarios { get; set; }
 
         public virtual InstanciasPlantillasPasosDetalle PlantillaPasoDetalleNavigation { get; set; }
         public virtual Usuarios UsuarioNavigation { get; set; }

@@ -12,11 +12,11 @@ namespace PMStudio.Models.Entities
             PasosUsuariosDetalle = new HashSet<PasosUsuariosDetalle>();
         }
 
-        public decimal IdUsuario { get; set; }
+        public int IdUsuario { get; set; }
         public string Nombres { get; set; }
         public string Apellidos { get; set; }
         public string UsuarioEmail { get; set; }
-        public decimal Rango { get; set; }
+        public int Rango { get; set; }
 
         public virtual Rangos RangoNavigation { get; set; }
         public virtual ICollection<InstanciasPlantillas> InstanciasPlantillas { get; set; }
