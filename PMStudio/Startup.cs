@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Oracle.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +14,9 @@ using Microsoft.EntityFrameworkCore;
 using PMStudio.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http.Features;
+using PMStudio.Models;
+using System.Net;
 
 namespace PMStudio
 {
@@ -31,16 +35,19 @@ namespace PMStudio
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
+                //options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>()
-                .AddDefaultUI(UIFramework.Bootstrap4)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.Configure<FormOptions>(options =>
+            {
+                options.ValueCountLimit = int.MaxValue;
+                options.ValueLengthLimit = 1024 * 1024 * 100;
+            });
+
+            services.AddDbContext<PMStudioContext>(options =>
+                    options.UseOracle(
+                        Configuration.GetConnectionString("PMStudioContextConnection")));
 
             services.AddAuthentication()
                 .AddGoogle(options =>
@@ -69,6 +76,21 @@ namespace PMStudio
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseStatusCodePages(async context =>
+            {
+                var request = context.HttpContext.Request;
+                var response = context.HttpContext.Response;
+
+                if (response.StatusCode == (int)HttpStatusCode.Unauthorized)
+                {
+                    response.Redirect($"/Identity/Account/Login");
+                }
+                else if (response.StatusCode == (int)HttpStatusCode.Forbidden)
+                {
+                    response.Redirect($"/Identity/Account/AccessDenied");
+                }
+            });
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
