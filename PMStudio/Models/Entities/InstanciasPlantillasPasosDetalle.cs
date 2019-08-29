@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PMStudio.Areas.Identity.Data;
+using System;
 using System.Collections.Generic;
 
 namespace PMStudio.Models.Entities
@@ -15,11 +16,13 @@ namespace PMStudio.Models.Entities
         public decimal? Estado { get; set; }
         public decimal IdPlantillaPasoDetalle { get; set; }
         public decimal? UsuarioAccion { get; set; }
+        public string AspNetUser { get; set; }
 
         public virtual Acciones EstadoNavigation { get; set; }
         public virtual InstanciasPlantillas InstanciaPlantillaNavigation { get; set; }
         public virtual PasosInstancias PasoNavigation { get; set; }
         public virtual Usuarios UsuarioAccionNavigation { get; set; }
+        public virtual PMStudioUser AspNetUserNavigation { get; set; }
         public virtual ICollection<PasosUsuariosDetalle> PasosUsuariosDetalle { get; set; }
     }
 }

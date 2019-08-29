@@ -102,11 +102,20 @@ namespace PMStudio.Models
                     .HasColumnName("USUARIO")
                     .HasColumnType("NUMBER(38)");
 
+                entity.Property(e => e.AspNetUser)
+                    .IsRequired()
+                    .HasColumnName("ASPNETUSER");
+
                 entity.HasOne(d => d.UsuarioNavigation)
                     .WithMany(p => p.InstanciasPlantillas)
                     .HasForeignKey(d => d.Usuario)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("INSTANCIAS_PLANTILLAS_FK1");
+
+                entity.HasOne(d => d.AspNetUserNavigation)
+                    .WithMany(p => p.InstanciasPlantillas)
+                    .HasForeignKey(d => d.AspNetUser)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
             });
 
             builder.Entity<InstanciasPlantillasDatosDetalle>(entity =>
@@ -177,6 +186,10 @@ namespace PMStudio.Models
                     .HasColumnName("USUARIO_ACCION")
                     .HasColumnType("NUMBER(38)");
 
+                entity.Property(e => e.AspNetUser)
+                    .IsRequired(false)
+                    .HasColumnName("ASPNETUSER");
+
                 entity.HasOne(d => d.EstadoNavigation)
                     .WithMany(p => p.InstanciasPlantillasPasosDetalle)
                     .HasForeignKey(d => d.Estado)
@@ -197,6 +210,10 @@ namespace PMStudio.Models
                     .WithMany(p => p.InstanciasPlantillasPasosDetalle)
                     .HasForeignKey(d => d.UsuarioAccion)
                     .HasConstraintName("INSTANCIAS_PLANTILLAS_PASOS_DETALLE_FK4");
+
+                entity.HasOne(d => d.AspNetUserNavigation)
+                    .WithMany(p => p.InstanciasPlantillasPasosDetalle)
+                    .HasForeignKey(d => d.AspNetUser);
             });
 
             builder.Entity<Pasos>(entity =>
@@ -318,6 +335,10 @@ namespace PMStudio.Models
                     .HasColumnName("USUARIO")
                     .HasColumnType("NUMBER(38)");
 
+                entity.Property(e => e.AspNetUser)
+                    .IsRequired()
+                    .HasColumnName("ASPNETUSER");
+
                 entity.HasOne(d => d.PlantillaPasoDetalleNavigation)
                     .WithMany(p => p.PasosUsuariosDetalle)
                     .HasForeignKey(d => d.PlantillaPasoDetalle)
@@ -328,6 +349,11 @@ namespace PMStudio.Models
                     .HasForeignKey(d => d.Usuario)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("PASOS_USUARIOS_DETALLE_FK2");
+
+                entity.HasOne(d => d.AspNetUserNavigation)
+                    .WithMany(p => p.PasosUsuariosDetalle)
+                    .HasForeignKey(d => d.AspNetUser)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
             });
 
             builder.Entity<Plantillas>(entity =>
