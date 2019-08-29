@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PMStudio.Areas.Identity.Data;
+using PMStudio.Models.Entities;
 
 namespace PMStudio.Models
 {
@@ -16,12 +17,500 @@ namespace PMStudio.Models
         {
         }
 
+        public virtual DbSet<Acciones> Acciones { get; set; }
+        public virtual DbSet<InstanciasPlantillas> InstanciasPlantillas { get; set; }
+        public virtual DbSet<InstanciasPlantillasDatosDetalle> InstanciasPlantillasDatosDetalle { get; set; }
+        public virtual DbSet<InstanciasPlantillasPasosDetalle> InstanciasPlantillasPasosDetalle { get; set; }
+        public virtual DbSet<Pasos> Pasos { get; set; }
+        public virtual DbSet<PasosInstancias> PasosInstancias { get; set; }
+        public virtual DbSet<PasosInstanciasDatosDetalle> PasosInstanciasDatosDetalle { get; set; }
+        public virtual DbSet<PasosUsuariosDetalle> PasosUsuariosDetalle { get; set; }
+        public virtual DbSet<Plantillas> Plantillas { get; set; }
+        public virtual DbSet<PlantillasCamposDetalle> PlantillasCamposDetalle { get; set; }
+        public virtual DbSet<PlantillasPasosDetalle> PlantillasPasosDetalle { get; set; }
+        public virtual DbSet<Rangos> Rangos { get; set; }
+        public virtual DbSet<Usuarios> Usuarios { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
+            builder.HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
+                .HasAnnotation("Relational:DefaultSchema", "C##PMSTUDIO");
+
+            builder.Entity<Acciones>(entity =>
+            {
+                entity.HasKey(e => e.IdAccion)
+                    .HasName("ACCIONES_PK");
+
+                entity.ToTable("ACCIONES");
+
+                entity.HasIndex(e => e.IdAccion)
+                    .HasName("ACCIONES_PK")
+                    .IsUnique();
+
+                entity.Property(e => e.IdAccion)
+                    .HasColumnName("ID_ACCION")
+                    .HasColumnType("NUMBER(38)")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasColumnName("NOMBRE")
+                    .HasColumnType("VARCHAR2(30)");
+            });
+
+            builder.Entity<InstanciasPlantillas>(entity =>
+            {
+                entity.HasKey(e => e.IdInstanciaPlantilla)
+                    .HasName("INSTANCIAS_PLANTILLAS_PK");
+
+                entity.ToTable("INSTANCIAS_PLANTILLAS");
+
+                entity.HasIndex(e => e.IdInstanciaPlantilla)
+                    .HasName("INSTANCIAS_PLANTILLAS_PK")
+                    .IsUnique();
+
+                entity.Property(e => e.IdInstanciaPlantilla)
+                    .HasColumnName("ID_INSTANCIA_PLANTILLA")
+                    .HasColumnType("NUMBER(38)")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Descripcion)
+                    .IsRequired()
+                    .HasColumnName("DESCRIPCION")
+                    .HasColumnType("VARCHAR2(100)");
+
+                entity.Property(e => e.Estado)
+                    .IsRequired()
+                    .HasColumnName("ESTADO")
+                    .HasColumnType("CHAR(1)");
+
+                entity.Property(e => e.Iniciada)
+                    .IsRequired()
+                    .HasColumnName("INICIADA")
+                    .HasColumnType("CHAR(1)");
+
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasColumnName("NOMBRE")
+                    .HasColumnType("VARCHAR2(50)");
+
+                entity.Property(e => e.Usuario)
+                    .HasColumnName("USUARIO")
+                    .HasColumnType("NUMBER(38)");
+
+                entity.HasOne(d => d.UsuarioNavigation)
+                    .WithMany(p => p.InstanciasPlantillas)
+                    .HasForeignKey(d => d.Usuario)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("INSTANCIAS_PLANTILLAS_FK1");
+            });
+
+            builder.Entity<InstanciasPlantillasDatosDetalle>(entity =>
+            {
+                entity.HasKey(e => e.IdInstanciaPlantillaDato)
+                    .HasName("INSTANCIAS_PLANTILLAS_DATOS_DETALLE_PK");
+
+                entity.ToTable("INSTANCIAS_PLANTILLAS_DATOS_DETALLE");
+
+                entity.HasIndex(e => e.IdInstanciaPlantillaDato)
+                    .HasName("INSTANCIAS_PLANTILLAS_DATOS_DETALLE_PK")
+                    .IsUnique();
+
+                entity.Property(e => e.IdInstanciaPlantillaDato)
+                    .HasColumnName("ID_INSTANCIA_PLANTILLA_DATO")
+                    .HasColumnType("NUMBER(38)")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Dato)
+                    .IsRequired()
+                    .HasColumnName("DATO")
+                    .HasColumnType("VARCHAR2(50)");
+
+                entity.Property(e => e.Instanciaplantilla)
+                    .HasColumnName("INSTANCIAPLANTILLA")
+                    .HasColumnType("NUMBER(38)");
+
+                entity.Property(e => e.NombreCampo)
+                    .IsRequired()
+                    .HasColumnName("NOMBRE_CAMPO")
+                    .HasColumnType("VARCHAR2(50)");
+
+                entity.HasOne(d => d.InstanciaplantillaNavigation)
+                    .WithMany(p => p.InstanciasPlantillasDatosDetalle)
+                    .HasForeignKey(d => d.Instanciaplantilla)
+                    .HasConstraintName("INSTANCIAS_PLANTILLAS_DATOS_DETALLE_FK1");
+            });
+
+            builder.Entity<InstanciasPlantillasPasosDetalle>(entity =>
+            {
+                entity.HasKey(e => e.IdPlantillaPasoDetalle)
+                    .HasName("INSTANCIAS_PLANTILLAS_PASOS_DETALLE_PK");
+
+                entity.ToTable("INSTANCIAS_PLANTILLAS_PASOS_DETALLE");
+
+                entity.HasIndex(e => e.IdPlantillaPasoDetalle)
+                    .HasName("INSTANCIAS_PLANTILLAS_PASOS_DETALLE_PK")
+                    .IsUnique();
+
+                entity.Property(e => e.IdPlantillaPasoDetalle)
+                    .HasColumnName("ID_PLANTILLA_PASO_DETALLE")
+                    .HasColumnType("NUMBER(38)")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Estado)
+                    .HasColumnName("ESTADO")
+                    .HasColumnType("NUMBER(38)");
+
+                entity.Property(e => e.InstanciaPlantilla)
+                    .HasColumnName("INSTANCIA_PLANTILLA")
+                    .HasColumnType("NUMBER(38)");
+
+                entity.Property(e => e.Paso)
+                    .HasColumnName("PASO")
+                    .HasColumnType("NUMBER(38)");
+
+                entity.Property(e => e.UsuarioAccion)
+                    .HasColumnName("USUARIO_ACCION")
+                    .HasColumnType("NUMBER(38)");
+
+                entity.HasOne(d => d.EstadoNavigation)
+                    .WithMany(p => p.InstanciasPlantillasPasosDetalle)
+                    .HasForeignKey(d => d.Estado)
+                    .HasConstraintName("INSTANCIAS_PLANTILLAS_PASOS_DETALLE_FK2");
+
+                entity.HasOne(d => d.InstanciaPlantillaNavigation)
+                    .WithMany(p => p.InstanciasPlantillasPasosDetalle)
+                    .HasForeignKey(d => d.InstanciaPlantilla)
+                    .HasConstraintName("INSTANCIAS_PLANTILLAS_PASOS_DETALLE_FK3");
+
+                entity.HasOne(d => d.PasoNavigation)
+                    .WithMany(p => p.InstanciasPlantillasPasosDetalle)
+                    .HasForeignKey(d => d.Paso)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("INSTANCIAS_PLANTILLAS_PASOS_DETALLE_FK1");
+
+                entity.HasOne(d => d.UsuarioAccionNavigation)
+                    .WithMany(p => p.InstanciasPlantillasPasosDetalle)
+                    .HasForeignKey(d => d.UsuarioAccion)
+                    .HasConstraintName("INSTANCIAS_PLANTILLAS_PASOS_DETALLE_FK4");
+            });
+
+            builder.Entity<Pasos>(entity =>
+            {
+                entity.HasKey(e => e.IdPaso)
+                    .HasName("PASOS_PK");
+
+                entity.ToTable("PASOS");
+
+                entity.HasIndex(e => e.IdPaso)
+                    .HasName("PASOS_PK")
+                    .IsUnique();
+
+                entity.Property(e => e.IdPaso)
+                    .HasColumnName("ID_PASO")
+                    .HasColumnType("NUMBER(38)")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Descripcion)
+                    .IsRequired()
+                    .HasColumnName("DESCRIPCION")
+                    .HasColumnType("VARCHAR2(100)");
+
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasColumnName("NOMBRE")
+                    .HasColumnType("VARCHAR2(50)");
+            });
+
+            builder.Entity<PasosInstancias>(entity =>
+            {
+                entity.HasKey(e => e.IdPasoinstancia)
+                    .HasName("PASOS_INSTANCIAS_PK");
+
+                entity.ToTable("PASOS_INSTANCIAS");
+
+                entity.HasIndex(e => e.IdPasoinstancia)
+                    .HasName("PASOS_INSTANCIAS_PK")
+                    .IsUnique();
+
+                entity.Property(e => e.IdPasoinstancia)
+                    .HasColumnName("ID_PASOINSTANCIA")
+                    .HasColumnType("NUMBER(38)")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Descripcion)
+                    .IsRequired()
+                    .HasColumnName("DESCRIPCION")
+                    .HasColumnType("VARCHAR2(100)");
+
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasColumnName("NOMBRE")
+                    .HasColumnType("VARCHAR2(50)");
+            });
+
+            builder.Entity<PasosInstanciasDatosDetalle>(entity =>
+            {
+                entity.HasKey(e => e.IdPasosInstanciasDatos)
+                    .HasName("PASOS_INSTANCIAS_DATOS_DETALLE_PK");
+
+                entity.ToTable("PASOS_INSTANCIAS_DATOS_DETALLE");
+
+                entity.HasIndex(e => e.IdPasosInstanciasDatos)
+                    .HasName("PASOS_INSTANCIAS_DATOS_DETALLE_PK")
+                    .IsUnique();
+
+                entity.Property(e => e.IdPasosInstanciasDatos)
+                    .HasColumnName("ID_PASOS_INSTANCIAS_DATOS")
+                    .HasColumnType("NUMBER(38)")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.InstanciaPlantillaDato)
+                    .HasColumnName("INSTANCIA_PLANTILLA_DATO")
+                    .HasColumnType("NUMBER(38)");
+
+                entity.Property(e => e.Paso)
+                    .HasColumnName("PASO")
+                    .HasColumnType("NUMBER(38)");
+
+                entity.Property(e => e.SoloLectura)
+                    .IsRequired()
+                    .HasColumnName("SOLO_LECTURA")
+                    .HasColumnType("CHAR(1)");
+
+                entity.HasOne(d => d.InstanciaPlantillaDatoNavigation)
+                    .WithMany(p => p.PasosInstanciasDatosDetalle)
+                    .HasForeignKey(d => d.InstanciaPlantillaDato)
+                    .HasConstraintName("PASOS_INSTANCIAS_DATOS_DETALLE_FK1");
+
+                entity.HasOne(d => d.PasoNavigation)
+                    .WithMany(p => p.PasosInstanciasDatosDetalle)
+                    .HasForeignKey(d => d.Paso)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("PASOS_INSTANCIAS_DATOS_DETALLE_FK2");
+            });
+
+            builder.Entity<PasosUsuariosDetalle>(entity =>
+            {
+                entity.HasKey(e => e.IdPasosUsuarios)
+                    .HasName("PASOS_USUARIOS_DETALLE_PK");
+
+                entity.ToTable("PASOS_USUARIOS_DETALLE");
+
+                entity.HasIndex(e => e.IdPasosUsuarios)
+                    .HasName("PASOS_USUARIOS_DETALLE_PK")
+                    .IsUnique();
+
+                entity.Property(e => e.IdPasosUsuarios)
+                    .HasColumnName("ID_PASOS_USUARIOS")
+                    .HasColumnType("NUMBER(38)")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.PlantillaPasoDetalle)
+                    .HasColumnName("PLANTILLA_PASO_DETALLE")
+                    .HasColumnType("NUMBER(38)");
+
+                entity.Property(e => e.Usuario)
+                    .HasColumnName("USUARIO")
+                    .HasColumnType("NUMBER(38)");
+
+                entity.HasOne(d => d.PlantillaPasoDetalleNavigation)
+                    .WithMany(p => p.PasosUsuariosDetalle)
+                    .HasForeignKey(d => d.PlantillaPasoDetalle)
+                    .HasConstraintName("PASOS_USUARIOS_DETALLE_FK1");
+
+                entity.HasOne(d => d.UsuarioNavigation)
+                    .WithMany(p => p.PasosUsuariosDetalle)
+                    .HasForeignKey(d => d.Usuario)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("PASOS_USUARIOS_DETALLE_FK2");
+            });
+
+            builder.Entity<Plantillas>(entity =>
+            {
+                entity.HasKey(e => e.IdPlantilla)
+                    .HasName("PLANTILLAS_PK");
+
+                entity.ToTable("PLANTILLAS");
+
+                entity.HasIndex(e => e.IdPlantilla)
+                    .HasName("PLANTILLAS_PK")
+                    .IsUnique();
+
+                entity.Property(e => e.IdPlantilla)
+                    .HasColumnName("ID_PLANTILLA")
+                    .HasColumnType("NUMBER(38)")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Descripcion)
+                    .IsRequired()
+                    .HasColumnName("DESCRIPCION")
+                    .HasColumnType("VARCHAR2(100)");
+
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasColumnName("NOMBRE")
+                    .HasColumnType("VARCHAR2(50)");
+            });
+
+            builder.Entity<PlantillasCamposDetalle>(entity =>
+            {
+                entity.HasKey(e => new { e.IdPlantillaCampo, e.Plantilla })
+                    .HasName("PLANTILLAS_CAMPOS_DETALLE_PK");
+
+                entity.ToTable("PLANTILLAS_CAMPOS_DETALLE");
+
+                entity.HasIndex(e => new { e.IdPlantillaCampo, e.Plantilla })
+                    .HasName("PLANTILLAS_CAMPOS_DETALLE_PK")
+                    .IsUnique();
+
+                entity.Property(e => e.IdPlantillaCampo)
+                    .HasColumnName("ID_PLANTILLA_CAMPO")
+                    .HasColumnType("NUMBER(38)");
+
+                entity.Property(e => e.Plantilla)
+                    .HasColumnName("PLANTILLA")
+                    .HasColumnType("NUMBER(38)");
+
+                entity.Property(e => e.NombreCampo)
+                    .IsRequired()
+                    .HasColumnName("NOMBRE_CAMPO")
+                    .HasColumnType("VARCHAR2(50)");
+
+                entity.HasOne(d => d.PlantillaNavigation)
+                    .WithMany(p => p.PlantillasCamposDetalle)
+                    .HasForeignKey(d => d.Plantilla)
+                    .HasConstraintName("PLANTILLAS_CAMPOS_DETALLE_FK1");
+            });
+
+            builder.Entity<PlantillasPasosDetalle>(entity =>
+            {
+                entity.HasKey(e => new { e.IdPlantillaPaso, e.Plantilla })
+                    .HasName("PLANTILLAS_PASOS_DETALLE_PK");
+
+                entity.ToTable("PLANTILLAS_PASOS_DETALLE");
+
+                entity.HasIndex(e => new { e.IdPlantillaPaso, e.Plantilla })
+                    .HasName("PLANTILLAS_PASOS_DETALLE_PK")
+                    .IsUnique();
+
+                entity.Property(e => e.IdPlantillaPaso)
+                    .HasColumnName("ID_PLANTILLA_PASO")
+                    .HasColumnType("NUMBER(38)");
+
+                entity.Property(e => e.Plantilla)
+                    .HasColumnName("PLANTILLA")
+                    .HasColumnType("NUMBER(38)");
+
+                entity.Property(e => e.Paso)
+                    .HasColumnName("PASO")
+                    .HasColumnType("NUMBER(38)");
+
+                entity.HasOne(d => d.PasoNavigation)
+                    .WithMany(p => p.PlantillasPasosDetalle)
+                    .HasForeignKey(d => d.Paso)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("PLANTILLAS_PASOS_DETALLE_FK2");
+
+                entity.HasOne(d => d.PlantillaNavigation)
+                    .WithMany(p => p.PlantillasPasosDetalle)
+                    .HasForeignKey(d => d.Plantilla)
+                    .HasConstraintName("PLANTILLAS_PASOS_DETALLE_FK1");
+            });
+
+            builder.Entity<Rangos>(entity =>
+            {
+                entity.HasKey(e => e.IdRango)
+                    .HasName("RANGOS_PK");
+
+                entity.ToTable("RANGOS");
+
+                entity.HasIndex(e => e.IdRango)
+                    .HasName("RANGOS_PK")
+                    .IsUnique();
+
+                entity.Property(e => e.IdRango)
+                    .HasColumnName("ID_RANGO")
+                    .HasColumnType("NUMBER(38)")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Nivel)
+                    .HasColumnName("NIVEL")
+                    .HasColumnType("NUMBER(38)");
+
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasColumnName("NOMBRE")
+                    .HasColumnType("VARCHAR2(50)");
+            });
+
+            builder.Entity<Usuarios>(entity =>
+            {
+                entity.HasKey(e => e.IdUsuario)
+                    .HasName("USUARIOS_PK");
+
+                entity.ToTable("USUARIOS");
+
+                entity.HasIndex(e => e.IdUsuario)
+                    .HasName("USUARIOS_PK")
+                    .IsUnique();
+
+                entity.Property(e => e.IdUsuario)
+                    .HasColumnName("ID_USUARIO")
+                    .HasColumnType("NUMBER(38)")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Apellidos)
+                    .IsRequired()
+                    .HasColumnName("APELLIDOS")
+                    .HasColumnType("VARCHAR2(50)");
+
+                entity.Property(e => e.Nombres)
+                    .IsRequired()
+                    .HasColumnName("NOMBRES")
+                    .HasColumnType("VARCHAR2(50)");
+
+                entity.Property(e => e.Rango)
+                    .HasColumnName("RANGO")
+                    .HasColumnType("NUMBER(38)");
+
+                entity.Property(e => e.UsuarioEmail)
+                    .IsRequired()
+                    .HasColumnName("USUARIO_EMAIL")
+                    .HasColumnType("VARCHAR2(30)");
+
+                entity.HasOne(d => d.RangoNavigation)
+                    .WithMany(p => p.Usuarios)
+                    .HasForeignKey(d => d.Rango)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("USUARIOS_FK1");
+            });
+
+            builder.HasSequence("ISEQ$$_73724");
+
+            builder.HasSequence("ISEQ$$_73727");
+
+            builder.HasSequence("ISEQ$$_73730");
+
+            builder.HasSequence("ISEQ$$_73733");
+
+            builder.HasSequence("ISEQ$$_73736");
+
+            builder.HasSequence("ISEQ$$_73739");
+
+            builder.HasSequence("ISEQ$$_73746");
+
+            builder.HasSequence("ISEQ$$_73749");
+
+            builder.HasSequence("ISEQ$$_73752");
+
+            builder.HasSequence("ISEQ$$_73755");
+
+            builder.HasSequence("ISEQ$$_73758");
         }
     }
 }
