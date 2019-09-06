@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Información";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="text-center">
+    @{
+        if (ViewData["Message"] != null)
+        {
+            <h1 class="display-4">@ViewData["Title"]</h1>
+            <p>@ViewData["Message"]</p>
+        }
+        else if (TempData["Message"] != null)
+        {
+            <h1 class="display-4">@ViewData["Title"]</h1>
+            <p>@TempData["Message"]</p>
+        }
+        else
+        {
+            <h1 class="display-4">Sin información</h1>
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Regresar al inicio</a>
+        }
+    }
+</div>

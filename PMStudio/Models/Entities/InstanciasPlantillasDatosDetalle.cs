@@ -12,10 +12,14 @@ namespace PMStudio.Models.Entities
 
         public int IdInstanciaPlantillaDato { get; set; }
         public int Instanciaplantilla { get; set; }
+        public int IdDatoTipo { get; set; }
         public string NombreCampo { get; set; }
-        public string Dato { get; set; }
+        public string DatoTexto { get; set; }
+        public long? DatoNumerico { get; set; }
+        public DateTime? DatoFecha { get; set; }
 
         public virtual InstanciasPlantillas InstanciaplantillaNavigation { get; set; }
+        public virtual DatoTipo IdDatoTipoNavigation { get; set; }
         public virtual ICollection<PasosInstanciasDatosDetalle> PasosInstanciasDatosDetalle { get; set; }
     }
 }

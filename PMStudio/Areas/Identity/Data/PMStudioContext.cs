@@ -18,6 +18,7 @@ namespace PMStudio.Models
         }
 
         public virtual DbSet<Acciones> Acciones { get; set; }
+        public virtual DbSet<DatoTipo> DatoTipo { get; set; }
         public virtual DbSet<InstanciasPlantillas> InstanciasPlantillas { get; set; }
         public virtual DbSet<InstanciasPlantillasDatosDetalle> InstanciasPlantillasDatosDetalle { get; set; }
         public virtual DbSet<InstanciasPlantillasPasosDetalle> InstanciasPlantillasPasosDetalle { get; set; }
@@ -55,6 +56,22 @@ namespace PMStudio.Models
                     .IsRequired()
                     .HasColumnName("NOMBRE")
                     .HasColumnType("VARCHAR2(30)");
+            });
+
+            builder.Entity<DatoTipo>(entity =>
+            {
+                entity.HasKey(e => e.IdDatoTipo);
+
+                entity.ToTable("DATO_TIPO");
+
+                entity.Property(e => e.IdDatoTipo)
+                    .HasColumnName("ID_DATO_TIPO")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasColumnName("NOMBRE")
+                    .HasColumnType("VARCHAR2(50)");
             });
 
             builder.Entity<InstanciasPlantillas>(entity =>
@@ -115,10 +132,19 @@ namespace PMStudio.Models
                     .HasColumnName("ID_INSTANCIA_PLANTILLA_DATO")
                     .ValueGeneratedOnAdd();
 
-                entity.Property(e => e.Dato)
-                    .IsRequired()
-                    .HasColumnName("DATO")
+                entity.Property(e => e.IdDatoTipo)
+                    .HasColumnName("ID_DATO_TIPO");
+
+                entity.Property(e => e.DatoTexto)
+                    .IsRequired(false)
+                    .HasColumnName("DATO_TEXTO")
                     .HasColumnType("VARCHAR2(50)");
+
+                entity.Property(e => e.DatoNumerico)
+                    .HasColumnName("DATO_NUMERICO");
+
+                entity.Property(e => e.DatoFecha)
+                    .HasColumnName("DATO_FECHA");
 
                 entity.Property(e => e.Instanciaplantilla)
                     .HasColumnName("INSTANCIAPLANTILLA");
@@ -131,6 +157,10 @@ namespace PMStudio.Models
                 entity.HasOne(d => d.InstanciaplantillaNavigation)
                     .WithMany(p => p.InstanciasPlantillasDatosDetalle)
                     .HasForeignKey(d => d.Instanciaplantilla);
+
+                entity.HasOne(d => d.IdDatoTipoNavigation)
+                    .WithMany(p => p.InstanciasPlantillasDatosDetalle)
+                    .HasForeignKey(d => d.IdDatoTipo);
             });
 
             builder.Entity<InstanciasPlantillasPasosDetalle>(entity =>
@@ -319,6 +349,9 @@ namespace PMStudio.Models
                 entity.Property(e => e.IdPlantillaCampo)
                     .HasColumnName("ID_PLANTILLA_CAMPO");
 
+                entity.Property(e => e.IdDatoTipo)
+                    .HasColumnName("ID_DATO_TIPO");
+
                 entity.Property(e => e.Plantilla)
                     .HasColumnName("PLANTILLA");
 
@@ -330,6 +363,10 @@ namespace PMStudio.Models
                 entity.HasOne(d => d.PlantillaNavigation)
                     .WithMany(p => p.PlantillasCamposDetalle)
                     .HasForeignKey(d => d.Plantilla);
+
+                entity.HasOne(d => d.IdDatoTipoNavigation)
+                    .WithMany(p => p.PlantillasCamposDetalle)
+                    .HasForeignKey(d => d.IdDatoTipo);
             });
 
             builder.Entity<PlantillasPasosDetalle>(entity =>

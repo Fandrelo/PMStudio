@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace PMStudio.Models.Entities
 {
@@ -12,7 +13,9 @@ namespace PMStudio.Models.Entities
         }
 
         public int IdPlantilla { get; set; }
+        [Required]
         public string Nombre { get; set; }
+        [Required]
         public string Descripcion { get; set; }
 
         public virtual ICollection<PlantillasCamposDetalle> PlantillasCamposDetalle { get; set; }
