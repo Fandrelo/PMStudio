@@ -11,6 +11,8 @@
     <Compile Remove="Migrations\20190829161713_StringTest.Designer.cs" />
     <Compile Remove="Migrations\20190906230840_AddedNewFields.cs" />
     <Compile Remove="Migrations\20190906230840_AddedNewFields.Designer.cs" />
+    <Compile Remove="Migrations\20190912223420_AddedDateFieldsAndUsersToSteps.cs" />
+    <Compile Remove="Migrations\20190912223420_AddedDateFieldsAndUsersToSteps.Designer.cs" />
   </ItemGroup>
 
 

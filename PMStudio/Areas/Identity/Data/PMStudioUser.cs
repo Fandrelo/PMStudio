@@ -15,10 +15,12 @@ namespace PMStudio.Areas.Identity.Data
             InstanciasPlantillas = new HashSet<InstanciasPlantillas>();
             InstanciasPlantillasPasosDetalle = new HashSet<InstanciasPlantillasPasosDetalle>();
             PasosUsuariosDetalle = new HashSet<PasosUsuariosDetalle>();
+            PlantillasPasosUsuariosDetalle = new HashSet<PlantillasPasosUsuariosDetalle>();
         }
 
         public virtual ICollection<InstanciasPlantillas> InstanciasPlantillas { get; set; }
         public virtual ICollection<InstanciasPlantillasPasosDetalle> InstanciasPlantillasPasosDetalle { get; set; }
         public virtual ICollection<PasosUsuariosDetalle> PasosUsuariosDetalle { get; set; }
+        public virtual ICollection<PlantillasPasosUsuariosDetalle> PlantillasPasosUsuariosDetalle { get; set; }
     }
 }

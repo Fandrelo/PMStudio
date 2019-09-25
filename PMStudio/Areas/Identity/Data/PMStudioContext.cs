@@ -29,8 +29,8 @@ namespace PMStudio.Models
         public virtual DbSet<Plantillas> Plantillas { get; set; }
         public virtual DbSet<PlantillasCamposDetalle> PlantillasCamposDetalle { get; set; }
         public virtual DbSet<PlantillasPasosDetalle> PlantillasPasosDetalle { get; set; }
-        public virtual DbSet<Rangos> Rangos { get; set; }
-        public virtual DbSet<Usuarios> Usuarios { get; set; }
+        public virtual DbSet<PlantillasPasosUsuariosDetalle> PlantillasPasosUsuariosDetalle { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -72,6 +72,13 @@ namespace PMStudio.Models
                     .IsRequired()
                     .HasColumnName("NOMBRE")
                     .HasColumnType("VARCHAR2(50)");
+
+                entity.HasData(
+                    new DatoTipo { IdDatoTipo = 1, Nombre = "Texto" },
+                    new DatoTipo { IdDatoTipo = 2, Nombre = "Fecha" },
+                    new DatoTipo { IdDatoTipo = 3, Nombre = "Entero" },
+                    new DatoTipo { IdDatoTipo = 4, Nombre = "Decimal" }
+                );
             });
 
             builder.Entity<InstanciasPlantillas>(entity =>
@@ -104,17 +111,9 @@ namespace PMStudio.Models
                     .HasColumnName("NOMBRE")
                     .HasColumnType("VARCHAR2(50)");
 
-                entity.Property(e => e.Usuario)
-                    .HasColumnName("USUARIO");
-
                 entity.Property(e => e.AspNetUser)
                     .IsRequired()
                     .HasColumnName("ASPNETUSER");
-
-                entity.HasOne(d => d.UsuarioNavigation)
-                    .WithMany(p => p.InstanciasPlantillas)
-                    .HasForeignKey(d => d.Usuario)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
 
                 entity.HasOne(d => d.AspNetUserNavigation)
                     .WithMany(p => p.InstanciasPlantillas)
@@ -142,6 +141,9 @@ namespace PMStudio.Models
 
                 entity.Property(e => e.DatoNumerico)
                     .HasColumnName("DATO_NUMERICO");
+
+                entity.Property(e => e.DatoDecimal)
+                    .HasColumnName("DATO_DECIMAL");
 
                 entity.Property(e => e.DatoFecha)
                     .HasColumnName("DATO_FECHA");
@@ -182,9 +184,6 @@ namespace PMStudio.Models
                 entity.Property(e => e.Paso)
                     .HasColumnName("PASO");
 
-                entity.Property(e => e.UsuarioAccion)
-                    .HasColumnName("USUARIO_ACCION");
-
                 entity.Property(e => e.AspNetUser)
                     .IsRequired(false)
                     .HasColumnName("ASPNETUSER");
@@ -201,10 +200,6 @@ namespace PMStudio.Models
                     .WithMany(p => p.InstanciasPlantillasPasosDetalle)
                     .HasForeignKey(d => d.Paso)
                     .OnDelete(DeleteBehavior.ClientSetNull);
-
-                entity.HasOne(d => d.UsuarioAccionNavigation)
-                    .WithMany(p => p.InstanciasPlantillasPasosDetalle)
-                    .HasForeignKey(d => d.UsuarioAccion);
 
                 entity.HasOne(d => d.AspNetUserNavigation)
                     .WithMany(p => p.InstanciasPlantillasPasosDetalle)
@@ -230,6 +225,12 @@ namespace PMStudio.Models
                     .IsRequired()
                     .HasColumnName("NOMBRE")
                     .HasColumnType("VARCHAR2(50)");
+
+                entity.Property(e => e.FechaInicio)
+                    .HasColumnName("FECHA_INICIO");
+
+                entity.Property(e => e.FechaFin)
+                    .HasColumnName("FECHA_FIN");
             });
 
             builder.Entity<PasosInstancias>(entity =>
@@ -297,9 +298,6 @@ namespace PMStudio.Models
                 entity.Property(e => e.PlantillaPasoDetalle)
                     .HasColumnName("PLANTILLA_PASO_DETALLE");
 
-                entity.Property(e => e.Usuario)
-                    .HasColumnName("USUARIO");
-
                 entity.Property(e => e.AspNetUser)
                     .IsRequired()
                     .HasColumnName("ASPNETUSER");
@@ -307,11 +305,6 @@ namespace PMStudio.Models
                 entity.HasOne(d => d.PlantillaPasoDetalleNavigation)
                     .WithMany(p => p.PasosUsuariosDetalle)
                     .HasForeignKey(d => d.PlantillaPasoDetalle);
-
-                entity.HasOne(d => d.UsuarioNavigation)
-                    .WithMany(p => p.PasosUsuariosDetalle)
-                    .HasForeignKey(d => d.Usuario)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
 
                 entity.HasOne(d => d.AspNetUserNavigation)
                     .WithMany(p => p.PasosUsuariosDetalle)
@@ -342,12 +335,13 @@ namespace PMStudio.Models
 
             builder.Entity<PlantillasCamposDetalle>(entity =>
             {
-                entity.HasKey(e => new { e.IdPlantillaCampo, e.Plantilla });
+                entity.HasKey(e => e.IdPlantillaCampo);
 
                 entity.ToTable("PLANTILLAS_CAMPOS_DETALLE");
 
                 entity.Property(e => e.IdPlantillaCampo)
-                    .HasColumnName("ID_PLANTILLA_CAMPO");
+                    .HasColumnName("ID_PLANTILLA_CAMPO")
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.IdDatoTipo)
                     .HasColumnName("ID_DATO_TIPO");
@@ -371,12 +365,13 @@ namespace PMStudio.Models
 
             builder.Entity<PlantillasPasosDetalle>(entity =>
             {
-                entity.HasKey(e => new { e.IdPlantillaPaso, e.Plantilla });
+                entity.HasKey(e => e.IdPlantillaPaso);
 
                 entity.ToTable("PLANTILLAS_PASOS_DETALLE");
 
                 entity.Property(e => e.IdPlantillaPaso)
-                    .HasColumnName("ID_PLANTILLA_PASO");
+                    .HasColumnName("ID_PLANTILLA_PASO")
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Plantilla)
                     .HasColumnName("PLANTILLA");
@@ -394,56 +389,30 @@ namespace PMStudio.Models
                     .HasForeignKey(d => d.Plantilla);
             });
 
-            builder.Entity<Rangos>(entity =>
+            builder.Entity<PlantillasPasosUsuariosDetalle>(entity =>
             {
-                entity.HasKey(e => e.IdRango);
+                entity.HasKey(e => e.IdPlantillaPasosUsuarios);
 
-                entity.ToTable("RANGOS");
+                entity.ToTable("PLANTILLAS_PASOS_USUARIOS_DETALLE");
 
-                entity.Property(e => e.IdRango)
-                    .HasColumnName("ID_RANGO")
+                entity.Property(e => e.IdPlantillaPasosUsuarios)
+                    .HasColumnName("ID_PLANTILLAS_PASOS_USUARIOS")
                     .ValueGeneratedOnAdd();
 
-                entity.Property(e => e.Nivel)
-                    .HasColumnName("NIVEL");
+                entity.Property(e => e.PlantillaPasoDetalle)
+                    .HasColumnName("PLANTILLA_PASO_DETALLE");
 
-                entity.Property(e => e.Nombre)
+                entity.Property(e => e.AspNetUser)
                     .IsRequired()
-                    .HasColumnName("NOMBRE")
-                    .HasColumnType("VARCHAR2(50)");
-            });
+                    .HasColumnName("ASPNETUSER");
 
-            builder.Entity<Usuarios>(entity =>
-            {
-                entity.HasKey(e => e.IdUsuario);
+                entity.HasOne(d => d.PlantillaPasoDetalleNavigation)
+                    .WithMany(p => p.PlantillasPasosUsuariosDetalle)
+                    .HasForeignKey(d => d.PlantillaPasoDetalle);
 
-                entity.ToTable("USUARIOS");
-
-                entity.Property(e => e.IdUsuario)
-                    .HasColumnName("ID_USUARIO")
-                    .ValueGeneratedOnAdd();
-
-                entity.Property(e => e.Apellidos)
-                    .IsRequired()
-                    .HasColumnName("APELLIDOS")
-                    .HasColumnType("VARCHAR2(50)");
-
-                entity.Property(e => e.Nombres)
-                    .IsRequired()
-                    .HasColumnName("NOMBRES")
-                    .HasColumnType("VARCHAR2(50)");
-
-                entity.Property(e => e.Rango)
-                    .HasColumnName("RANGO");
-
-                entity.Property(e => e.UsuarioEmail)
-                    .IsRequired()
-                    .HasColumnName("USUARIO_EMAIL")
-                    .HasColumnType("VARCHAR2(30)");
-
-                entity.HasOne(d => d.RangoNavigation)
-                    .WithMany(p => p.Usuarios)
-                    .HasForeignKey(d => d.Rango)
+                entity.HasOne(d => d.AspNetUserNavigation)
+                    .WithMany(p => p.PlantillasPasosUsuariosDetalle)
+                    .HasForeignKey(d => d.AspNetUser)
                     .OnDelete(DeleteBehavior.ClientSetNull);
             });
 

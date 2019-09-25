@@ -8,6 +8,7 @@
 <h1>@ViewData["Title"]</h1>
 
 <partial name="_Success" />
+<partial name="_Warning" />
 
 <div class="search-box">
     <div class="input-group">
@@ -17,18 +18,15 @@
                 <i class="fa fa-search"></i>
             </button>
         </div>
-        <input id="toSearch" type="text" class="form-control" placeholder="No. de Pasos">
-        <input id="toSearch" type="text" class="form-control" placeholder="No. de Datos">
+        <input id="steps" type="number" class="form-control" placeholder="No. de Pasos">
+        <input id="fields" type="number" class="form-control" placeholder="No. de Campos">
         <div class="input-group-append">
-            <button type="submit" class="btn btn-success" value="Crear">
+            <a id="anchorCreate" class="btn btn-success" href="/Plantillas/Create">
                 <i class="fa fa-plus"></i>
-            </button>
+            </a>
         </div>
     </div>
 </div>
-<a class="btn btn-success" href="/Plantillas/Create">
-    <i class="fa fa-plus"></i>
-</a>
 <div class="text-center">
     <div class="spinner-border text-primary" role="status" style="display:none">
         <span class="sr-only">Buscando...</span>
@@ -106,5 +104,20 @@
             $("#modalTitle").text("Acciones (" + name + ")");
             $("#modal").modal("show");
         }
+
+        var _defLink = "/Plantillas/Create/"
+        var _link = "";
+
+        $("#steps").change(function () {
+
+            _link = _defLink + $(this).val() + "/" + $("#fields").val();
+            $("#anchorCreate").attr("href", _link);
+        });
+
+        $("#fields").change(function () {
+
+            _link = _defLink + $("#steps").val() + "/" + $(this).val();
+            $("#anchorCreate").attr("href", _link);
+        });
     </script>
 }
