@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -38,6 +39,13 @@ namespace PMStudio.Controllers
             }
 
             var plantillas = await _context.Plantillas
+                .Include(p => p.PlantillasPasosDetalle)
+                    .ThenInclude(p => p.PasoNavigation)
+                .Include(p => p.PlantillasPasosDetalle)
+                    .ThenInclude(p => p.PlantillasPasosUsuariosDetalle)
+                        .ThenInclude(p => p.AspNetUserNavigation)
+                .Include(p => p.PlantillasCamposDetalle)
+                    .ThenInclude(p => p.IdDatoTipoNavigation)
                 .FirstOrDefaultAsync(m => m.IdPlantilla == id);
             if (plantillas == null)
             {
@@ -210,6 +218,84 @@ namespace PMStudio.Controllers
         private bool PlantillasExists(int id)
         {
             return _context.Plantillas.Any(e => e.IdPlantilla == id);
+        }
+
+        [HttpPost]
+        [Route("Plantillas/Instance")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Instance(int IdPlantilla)
+        {
+            var plantilla = await _context.Plantillas
+                .Include(p => p.PlantillasPasosDetalle)
+                    .ThenInclude(p => p.PasoNavigation)
+                .Include(p => p.PlantillasPasosDetalle)
+                    .ThenInclude(p => p.PlantillasPasosUsuariosDetalle)
+                        .ThenInclude(p => p.AspNetUserNavigation)
+                .Include(p => p.PlantillasCamposDetalle)
+                    .ThenInclude(p => p.IdDatoTipoNavigation)
+                .FirstOrDefaultAsync(m => m.IdPlantilla == IdPlantilla);
+            if (plantilla == null)
+            {
+                return NotFound();
+            }
+
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var steps = new List<InstanciasPlantillasPasosDetalle>();
+            foreach (var templateStep in plantilla.PlantillasPasosDetalle)
+            {
+                var templateStepsUsers = new List<PasosUsuariosDetalle>();
+                foreach (var usersInStep in templateStep.PlantillasPasosUsuariosDetalle)
+                {
+                    templateStepsUsers.Add(
+                        new PasosUsuariosDetalle
+                        {
+                            AspNetUser = usersInStep.AspNetUser
+                        }
+                    );
+                }
+                steps.Add(
+                    new InstanciasPlantillasPasosDetalle
+                    {
+                        AspNetUser = currentUserId,
+                        PasosUsuariosDetalle = templateStepsUsers,
+                        PasoNavigation = new PasosInstancias
+                        {
+                            Nombre = templateStep.PasoNavigation.Nombre,
+                            Descripcion = templateStep.PasoNavigation.Descripcion
+                        }
+                    }
+                );
+            }
+
+            var fields = new List<InstanciasPlantillasDatosDetalle>();
+            foreach (var templateField in plantilla.PlantillasCamposDetalle)
+            {
+                fields.Add(
+                    new InstanciasPlantillasDatosDetalle
+                    {
+                        NombreCampo = templateField.NombreCampo,
+                        IdDatoTipo = templateField.IdDatoTipo,
+                    }
+                );
+            }
+
+            var instance = new InstanciasPlantillas
+            {
+                Nombre = $"{plantilla.Nombre}",
+                Descripcion = plantilla.Descripcion,
+                AspNetUser = currentUserId,
+                Fecha = DateTime.Now,
+                Estado = "0",
+                Iniciada = "0",
+                InstanciasPlantillasPasosDetalle = steps,
+                InstanciasPlantillasDatosDetalle = fields,
+            };
+
+            _context.Add(instance);
+            await _context.SaveChangesAsync();
+
+            //TempData["Success"] = "Plantilla instanciada exitosamente.";
+            return RedirectToAction(nameof(InstanciasPlantillasController.Assign), nameof(InstanciasPlantillas), new { id = instance.IdInstanciaPlantilla });
         }
     }
 }

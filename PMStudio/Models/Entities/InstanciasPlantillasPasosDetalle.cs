@@ -11,10 +11,10 @@ namespace PMStudio.Models.Entities
             PasosUsuariosDetalle = new HashSet<PasosUsuariosDetalle>();
         }
 
+        public int IdPlantillaPasoDetalle { get; set; }
         public int InstanciaPlantilla { get; set; }
         public int Paso { get; set; }
         public int? Estado { get; set; }
-        public int IdPlantillaPasoDetalle { get; set; }
         public string AspNetUser { get; set; }
 
         public virtual Acciones EstadoNavigation { get; set; }

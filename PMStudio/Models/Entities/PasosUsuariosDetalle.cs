@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace PMStudio.Models.Entities
 {
+    /// <summary>
+    /// Instanced steps
+    /// </summary>
     public partial class PasosUsuariosDetalle
     {
         public int IdPasosUsuarios { get; set; }

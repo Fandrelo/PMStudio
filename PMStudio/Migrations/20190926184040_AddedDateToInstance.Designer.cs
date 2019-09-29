@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 using PMStudio.Models;
@@ -9,9 +10,10 @@ using PMStudio.Models;
 namespace PMStudio.Migrations
 {
     [DbContext(typeof(PMStudioContext))]
-    partial class PMStudioContextModelSnapshot : ModelSnapshot
+    [Migration("20190926184040_AddedDateToInstance")]
+    partial class AddedDateToInstance
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -201,23 +203,6 @@ namespace PMStudio.Migrations
                     b.HasKey("IdAccion");
 
                     b.ToTable("ACCIONES");
-
-                    b.HasData(
-                        new
-                        {
-                            IdAccion = 1,
-                            Nombre = "En Espera"
-                        },
-                        new
-                        {
-                            IdAccion = 2,
-                            Nombre = "Iniciado"
-                        },
-                        new
-                        {
-                            IdAccion = 3,
-                            Nombre = "Finalizado"
-                        });
                 });
 
             modelBuilder.Entity("PMStudio.Models.Entities.DatoTipo", b =>

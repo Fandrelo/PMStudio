@@ -18,6 +18,7 @@ namespace PMStudio.Models.Entities
         public string Estado { get; set; }
         public string Iniciada { get; set; }
         public string Descripcion { get; set; }
+        public DateTime Fecha { get; set; }
 
         public virtual PMStudioUser AspNetUserNavigation { get; set; }
         public virtual ICollection<InstanciasPlantillasDatosDetalle> InstanciasPlantillasDatosDetalle { get; set; }
