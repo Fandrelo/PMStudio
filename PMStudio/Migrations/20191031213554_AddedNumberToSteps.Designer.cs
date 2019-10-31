@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 using PMStudio.Models;
@@ -9,9 +10,10 @@ using PMStudio.Models;
 namespace PMStudio.Migrations
 {
     [DbContext(typeof(PMStudioContext))]
-    partial class PMStudioContextModelSnapshot : ModelSnapshot
+    [Migration("20191031213554_AddedNumberToSteps")]
+    partial class AddedNumberToSteps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

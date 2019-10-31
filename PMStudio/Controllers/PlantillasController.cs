@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore;
 using PMStudio.Areas.Identity.Data;
 using PMStudio.Models;
 using PMStudio.Models.Entities;
+using PMStudio.Utils;
 
 namespace PMStudio.Controllers
 {
+    [Authorize(Roles = SystemRoles.Administrator)]
     public class PlantillasController : Controller
     {
         private readonly PMStudioContext _context;
@@ -46,6 +49,8 @@ namespace PMStudio.Controllers
                         .ThenInclude(p => p.AspNetUserNavigation)
                 .Include(p => p.PlantillasCamposDetalle)
                     .ThenInclude(p => p.IdDatoTipoNavigation)
+                .Include(p => p.PlantillasCamposDetalle)
+                    .ThenInclude(p => p.PasosPlantillasCamposDetalle)
                 .FirstOrDefaultAsync(m => m.IdPlantilla == id);
             if (plantillas == null)
             {
@@ -77,8 +82,18 @@ namespace PMStudio.Controllers
                 PlantillasPasosDetalle = templateSteps,
                 PlantillasCamposDetalle = templateFields
             };
-            SetupCreateViewBag();
+            SetupCreateViewBag(model);
             return View(model);
+        }
+
+        [HttpPost]
+        [Route("Plantillas/LinkStepsAndFields")]
+        public IActionResult LinkStepsAndFields(Plantillas plantilla)
+        {
+            plantilla.PasosPlantillasCamposDetalle
+                .Add(new PasosPlantillasCamposDetalle());
+            SetupCreateViewBag(plantilla);
+            return View(nameof(Create), plantilla);
         }
 
         [HttpPost]
@@ -87,7 +102,7 @@ namespace PMStudio.Controllers
         {
             plantilla.PlantillasPasosDetalle
                 .Add(new PlantillasPasosDetalle() { PlantillasPasosUsuariosDetalle = new List<PlantillasPasosUsuariosDetalle>() });
-            SetupCreateViewBag();
+            SetupCreateViewBag(plantilla);
             return View(nameof(Create), plantilla);
         }
 
@@ -97,7 +112,7 @@ namespace PMStudio.Controllers
         {
             plantilla.PlantillasCamposDetalle
                 .Add(new PlantillasCamposDetalle());
-            SetupCreateViewBag();
+            SetupCreateViewBag(plantilla);
             return View(nameof(Create), plantilla);
         }
 
@@ -106,7 +121,7 @@ namespace PMStudio.Controllers
         public IActionResult AddUser(Plantillas plantilla, int step)
         {
             plantilla.PlantillasPasosDetalle[step].PlantillasPasosUsuariosDetalle.Add(new PlantillasPasosUsuariosDetalle());
-            SetupCreateViewBag();
+            SetupCreateViewBag(plantilla);
             return View(nameof(Create), plantilla);
         }
 
@@ -121,16 +136,63 @@ namespace PMStudio.Controllers
             if (ModelState.IsValid)
             {
                 _context.Add(plantillas);
+                var counter = 0;
+                foreach (var item in plantillas.PlantillasPasosDetalle)
+                {
+                    counter++;
+
+                    item.PasoNavigation.Numero = counter;
+                }
+                await _context.SaveChangesAsync();
+                var stepsAndFieldsLinks = plantillas.PasosPlantillasCamposDetalle;
+                foreach (var link in stepsAndFieldsLinks)
+                {
+                    link.Paso = 
+                        plantillas.PlantillasPasosDetalle[link.Paso].PasoNavigation.IdPaso;
+                    link.PlantillaCampo = 
+                        plantillas.PlantillasCamposDetalle[link.PlantillaCampo].IdPlantillaCampo;
+                }
+                _context.AddRange(stepsAndFieldsLinks);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Plantilla creada exitosamente";
                 return RedirectToAction(nameof(Index));
             }
-            SetupCreateViewBag();
+            SetupCreateViewBag(plantillas);
             return View(plantillas);
         }
 
-        private void SetupCreateViewBag()
+        private void SetupCreateViewBag(Plantillas plantilla)
         {
+            var steps = new List<SelectListItem>();
+            for(int i = 0; i < plantilla.PlantillasPasosDetalle.Count; i++)
+            {
+                if(plantilla.PlantillasPasosDetalle[i].PasoNavigation == null)
+                {
+                    break;
+                }
+                steps.Add(
+                    new SelectListItem
+                    {
+                        Text = plantilla.PlantillasPasosDetalle[i].PasoNavigation.Nombre,
+                        Value = i.ToString()
+                    });
+            }
+            ViewData["Steps"] = steps;
+            var fields = new List<SelectListItem>();
+            for (int i = 0; i < plantilla.PlantillasCamposDetalle.Count; i++)
+            {
+                if (string.IsNullOrEmpty(plantilla.PlantillasCamposDetalle[i].NombreCampo))
+                {
+                    break;
+                }
+                fields.Add(
+                    new SelectListItem
+                    {
+                        Text = plantilla.PlantillasCamposDetalle[i].NombreCampo,
+                        Value = i.ToString()
+                    });
+            }
+            ViewData["Fields"] = fields;
             ViewData["DataTypes"] = new SelectList(_context.DatoTipo, "IdDatoTipo", "Nombre");
             ViewData["Users"] = new SelectList(_userManager.Users, "Id", "UserName");
         }
@@ -233,6 +295,8 @@ namespace PMStudio.Controllers
                         .ThenInclude(p => p.AspNetUserNavigation)
                 .Include(p => p.PlantillasCamposDetalle)
                     .ThenInclude(p => p.IdDatoTipoNavigation)
+                .Include(p => p.PlantillasCamposDetalle)
+                    .ThenInclude(p => p.PasosPlantillasCamposDetalle)
                 .FirstOrDefaultAsync(m => m.IdPlantilla == IdPlantilla);
             if (plantilla == null)
             {
@@ -261,7 +325,10 @@ namespace PMStudio.Controllers
                         PasoNavigation = new PasosInstancias
                         {
                             Nombre = templateStep.PasoNavigation.Nombre,
-                            Descripcion = templateStep.PasoNavigation.Descripcion
+                            Descripcion = templateStep.PasoNavigation.Descripcion,
+                            FechaInicio = DateTime.Now,
+                            IdLinkHelper = templateStep.Paso,
+                            Numero = templateStep.PasoNavigation.Numero.GetValueOrDefault()
                         }
                     }
                 );
@@ -275,6 +342,7 @@ namespace PMStudio.Controllers
                     {
                         NombreCampo = templateField.NombreCampo,
                         IdDatoTipo = templateField.IdDatoTipo,
+                        IdLinkHelper = templateField.IdPlantillaCampo
                     }
                 );
             }
@@ -285,8 +353,8 @@ namespace PMStudio.Controllers
                 Descripcion = plantilla.Descripcion,
                 AspNetUser = currentUserId,
                 Fecha = DateTime.Now,
-                Estado = "0",
-                Iniciada = "0",
+                Estado = "Iniciada",
+                Iniciada = "1",
                 InstanciasPlantillasPasosDetalle = steps,
                 InstanciasPlantillasDatosDetalle = fields,
             };
@@ -294,8 +362,33 @@ namespace PMStudio.Controllers
             _context.Add(instance);
             await _context.SaveChangesAsync();
 
-            //TempData["Success"] = "Plantilla instanciada exitosamente.";
-            return RedirectToAction(nameof(InstanciasPlantillasController.Assign), nameof(InstanciasPlantillas), new { id = instance.IdInstanciaPlantilla });
+            var instancedStepsAndFieldsLinks = new List<PasosInstanciasDatosDetalle>();
+            foreach (var details in plantilla.PlantillasCamposDetalle)
+            {
+                foreach (var link in details.PasosPlantillasCamposDetalle)
+                {
+                    var instancedLink = new PasosInstanciasDatosDetalle
+                    {
+                        SoloLectura = link.SoloLectura,
+                        InstanciaPlantillaDato =
+                        instance.InstanciasPlantillasDatosDetalle
+                        .Where(x => x.IdLinkHelper == link.PlantillaCampo)
+                        .Select(x => x.IdInstanciaPlantillaDato)
+                        .FirstOrDefault(),
+                        Paso = instance.InstanciasPlantillasPasosDetalle
+                        .Where(x => x.PasoNavigation.IdLinkHelper == link.Paso)
+                        .Select(x => x.Paso)
+                        .FirstOrDefault()
+                    };
+                    instancedStepsAndFieldsLinks.Add(instancedLink);
+                }
+            }
+
+            _context.AddRange(instancedStepsAndFieldsLinks);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Plantilla instanciada exitosamente.";
+            return RedirectToAction(nameof(InstanciasPlantillasController.Details), nameof(InstanciasPlantillas), new { id = instance.IdInstanciaPlantilla });
         }
     }
 }

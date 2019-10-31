@@ -1,0 +1,28 @@
+﻿@{
+    ViewData["Title"] = "Roles";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>
+    <a asp-action="Assign">Asignar</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Roles
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.Name
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

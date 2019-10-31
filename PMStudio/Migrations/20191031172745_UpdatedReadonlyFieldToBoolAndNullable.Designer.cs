@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 using PMStudio.Models;
@@ -9,9 +10,10 @@ using PMStudio.Models;
 namespace PMStudio.Migrations
 {
     [DbContext(typeof(PMStudioContext))]
-    partial class PMStudioContextModelSnapshot : ModelSnapshot
+    [Migration("20191031172745_UpdatedReadonlyFieldToBoolAndNullable")]
+    partial class UpdatedReadonlyFieldToBoolAndNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -394,9 +396,6 @@ namespace PMStudio.Migrations
                         .HasColumnName("NOMBRE")
                         .HasColumnType("VARCHAR2(50)");
 
-                    b.Property<int?>("Numero")
-                        .HasColumnName("NUMERO");
-
                     b.HasKey("IdPaso");
 
                     b.ToTable("PASOS");
@@ -423,9 +422,6 @@ namespace PMStudio.Migrations
                         .IsRequired()
                         .HasColumnName("NOMBRE")
                         .HasColumnType("VARCHAR2(50)");
-
-                    b.Property<int?>("Numero")
-                        .HasColumnName("NUMERO");
 
                     b.HasKey("IdPasoinstancia");
 

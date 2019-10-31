@@ -13,6 +13,13 @@
     <Compile Remove="Migrations\20190906230840_AddedNewFields.Designer.cs" />
     <Compile Remove="Migrations\20190912223420_AddedDateFieldsAndUsersToSteps.cs" />
     <Compile Remove="Migrations\20190912223420_AddedDateFieldsAndUsersToSteps.Designer.cs" />
+    <Compile Remove="Migrations\20191031040501_UpdatedStatusOnInstance.cs" />
+    <Compile Remove="Migrations\20191031040501_UpdatedStatusOnInstance.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Roles\Assign.cshtml" />
+    <None Include="Views\Roles\Index.cshtml" />
   </ItemGroup>
 
 

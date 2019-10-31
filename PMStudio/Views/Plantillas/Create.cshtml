@@ -26,7 +26,7 @@
             <hr />
             <p>Pasos</p>
             <div class="form-group">
-                <input type="submit" class="btn btn-primary" value="Agregar Paso" formmethod="post" formaction="/Plantillas/AddStep" />
+                <input type="submit" class="btn btn-success" value="Agregar Paso" formmethod="post" formaction="/Plantillas/AddStep" />
             </div>
             @for (int i = 0; i < Model.PlantillasPasosDetalle.Count; i++)
             {
@@ -43,16 +43,6 @@
                     <span asp-validation-for="@Model.PlantillasPasosDetalle[i].PasoNavigation.Descripcion" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="@Model.PlantillasPasosDetalle[i].PasoNavigation.FechaInicio" class="control-label"></label>
-                    <input asp-for="@Model.PlantillasPasosDetalle[i].PasoNavigation.FechaInicio" class="form-control" />
-                    <span asp-validation-for="@Model.PlantillasPasosDetalle[i].PasoNavigation.FechaInicio" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="@Model.PlantillasPasosDetalle[i].PasoNavigation.FechaFin" class="control-label"></label>
-                    <input asp-for="@Model.PlantillasPasosDetalle[i].PasoNavigation.FechaFin" class="form-control" />
-                    <span asp-validation-for="@Model.PlantillasPasosDetalle[i].PasoNavigation.FechaFin" class="text-danger"></span>
-                </div>
-                <div class="form-group">
                     <input type="submit" class="btn btn-primary" value="Agregar Usuario" formmethod="post" formaction="/Plantillas/AddUser/@i" />
                 </div>
                 @for (int j = 0; j < Model.PlantillasPasosDetalle[i].PlantillasPasosUsuariosDetalle.Count; j++)
@@ -67,7 +57,7 @@
             }
             <p>Campos</p>
             <div class="form-group">
-                <input type="submit" class="btn btn-primary" value="Agregar Campo" formmethod="post" formaction="/Plantillas/AddField" />
+                <input type="submit" class="btn btn-success" value="Agregar Campo" formmethod="post" formaction="/Plantillas/AddField" />
             </div>
             @for (int i = 0; i < Model.PlantillasCamposDetalle.Count; i++)
             {
@@ -84,8 +74,32 @@
                     <span asp-validation-for="@Model.PlantillasCamposDetalle[i].IdDatoTipo" class="text-danger"></span>
                 </div>
             }
+            <p>Pasos <> Campos</p>
             <div class="form-group">
-                <input type="submit" value="@ViewData["Title"]" class="btn btn-primary" />
+                <input type="submit" class="btn btn-success" value="Anclar Pasos<>Campos" formmethod="post" formaction="/Plantillas/LinkStepsAndFields" />
+            </div>
+            @for (int i = 0; i < Model.PasosPlantillasCamposDetalle.Count; i++)
+            {
+                <hr />
+                <p>Pasos <> Campos #@(i + 1)</p>
+                <div class="form-group">
+                    <label asp-for="@Model.PasosPlantillasCamposDetalle[i].Paso" class="control-label"></label>
+                    <select asp-for="@Model.PasosPlantillasCamposDetalle[i].Paso" class="form-control" asp-items="ViewBag.Steps"></select>
+                    <span asp-validation-for="@Model.PasosPlantillasCamposDetalle[i].Paso" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="@Model.PasosPlantillasCamposDetalle[i].PlantillaCampo" class="control-label"></label>
+                    <select asp-for="@Model.PasosPlantillasCamposDetalle[i].PlantillaCampo" class="form-control" asp-items="ViewBag.Fields"></select>
+                    <span asp-validation-for="@Model.PasosPlantillasCamposDetalle[i].PlantillaCampo" class="text-danger"></span>
+                </div>
+                <div class="form-check">
+                    <input asp-for="@Model.PasosPlantillasCamposDetalle[i].SoloLectura" class="form-check-input" />
+                    <label asp-for="@Model.PasosPlantillasCamposDetalle[i].SoloLectura" class="form-check-label"></label>
+                    <span asp-validation-for="@Model.PasosPlantillasCamposDetalle[i].SoloLectura" class="text-danger"></span>
+                </div>
+            }
+            <div class="form-group">
+                <input type="submit" value="@ViewData["Title"]" class="btn btn-secondary" />
             </div>
         </form>
     </div>

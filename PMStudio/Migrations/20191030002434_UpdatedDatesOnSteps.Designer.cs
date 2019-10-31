@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 using PMStudio.Models;
@@ -9,9 +10,10 @@ using PMStudio.Models;
 namespace PMStudio.Migrations
 {
     [DbContext(typeof(PMStudioContext))]
-    partial class PMStudioContextModelSnapshot : ModelSnapshot
+    [Migration("20191030002434_UpdatedDatesOnSteps")]
+    partial class UpdatedDatesOnSteps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -217,11 +219,6 @@ namespace PMStudio.Migrations
                         {
                             IdAccion = 3,
                             Nombre = "Finalizado"
-                        },
-                        new
-                        {
-                            IdAccion = 4,
-                            Nombre = "Rechazado"
                         });
                 });
 
@@ -279,8 +276,9 @@ namespace PMStudio.Migrations
                         .HasColumnType("VARCHAR2(100)");
 
                     b.Property<string>("Estado")
+                        .IsRequired()
                         .HasColumnName("ESTADO")
-                        .HasColumnType("VARCHAR2(50)");
+                        .HasColumnType("CHAR(1)");
 
                     b.Property<DateTime>("Fecha")
                         .HasColumnName("FECHA");
@@ -394,9 +392,6 @@ namespace PMStudio.Migrations
                         .HasColumnName("NOMBRE")
                         .HasColumnType("VARCHAR2(50)");
 
-                    b.Property<int?>("Numero")
-                        .HasColumnName("NUMERO");
-
                     b.HasKey("IdPaso");
 
                     b.ToTable("PASOS");
@@ -413,19 +408,14 @@ namespace PMStudio.Migrations
                         .HasColumnName("DESCRIPCION")
                         .HasColumnType("VARCHAR2(100)");
 
-                    b.Property<DateTime?>("FechaFin")
-                        .HasColumnName("FECHA_FIN");
+                    b.Property<DateTime?>("FechaFin");
 
-                    b.Property<DateTime?>("FechaInicio")
-                        .HasColumnName("FECHA_INICIO");
+                    b.Property<DateTime?>("FechaInicio");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnName("NOMBRE")
                         .HasColumnType("VARCHAR2(50)");
-
-                    b.Property<int?>("Numero")
-                        .HasColumnName("NUMERO");
 
                     b.HasKey("IdPasoinstancia");
 
@@ -444,8 +434,10 @@ namespace PMStudio.Migrations
                     b.Property<int>("Paso")
                         .HasColumnName("PASO");
 
-                    b.Property<bool?>("SoloLectura")
-                        .HasColumnName("SOLO_LECTURA");
+                    b.Property<string>("SoloLectura")
+                        .IsRequired()
+                        .HasColumnName("SOLO_LECTURA")
+                        .HasColumnType("CHAR(1)");
 
                     b.HasKey("IdPasosInstanciasDatos");
 
@@ -454,30 +446,6 @@ namespace PMStudio.Migrations
                     b.HasIndex("Paso");
 
                     b.ToTable("PASOS_INSTANCIAS_DATOS_DETALLE");
-                });
-
-            modelBuilder.Entity("PMStudio.Models.Entities.PasosPlantillasCamposDetalle", b =>
-                {
-                    b.Property<int>("IdPasosPlantillasDatos")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("ID_PASOS_INSTANCIAS_DATOS");
-
-                    b.Property<int>("Paso")
-                        .HasColumnName("PASO");
-
-                    b.Property<int>("PlantillaCampo")
-                        .HasColumnName("PLANTILLA_CAMPO");
-
-                    b.Property<bool?>("SoloLectura")
-                        .HasColumnName("SOLO_LECTURA");
-
-                    b.HasKey("IdPasosPlantillasDatos");
-
-                    b.HasIndex("Paso");
-
-                    b.HasIndex("PlantillaCampo");
-
-                    b.ToTable("PASOS_PLANTILLAS_DATOS_DETALLE");
                 });
 
             modelBuilder.Entity("PMStudio.Models.Entities.PasosUsuariosDetalle", b =>
@@ -687,18 +655,6 @@ namespace PMStudio.Migrations
                     b.HasOne("PMStudio.Models.Entities.PasosInstancias", "PasoNavigation")
                         .WithMany("PasosInstanciasDatosDetalle")
                         .HasForeignKey("Paso");
-                });
-
-            modelBuilder.Entity("PMStudio.Models.Entities.PasosPlantillasCamposDetalle", b =>
-                {
-                    b.HasOne("PMStudio.Models.Entities.Pasos", "PasoNavigation")
-                        .WithMany("PasosPlantillasCamposDetalle")
-                        .HasForeignKey("Paso");
-
-                    b.HasOne("PMStudio.Models.Entities.PlantillasCamposDetalle", "PlantillaCampoNavigation")
-                        .WithMany("PasosPlantillasCamposDetalle")
-                        .HasForeignKey("PlantillaCampo")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("PMStudio.Models.Entities.PasosUsuariosDetalle", b =>

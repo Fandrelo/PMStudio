@@ -16,6 +16,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http.Features;
 using PMStudio.Models;
 using System.Net;
+using PMStudio.Utils;
+using PMStudio.Areas.Identity.Data;
 
 namespace PMStudio
 {
@@ -62,7 +64,7 @@ namespace PMStudio
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -103,6 +105,31 @@ namespace PMStudio
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+            CreateRoles(serviceProvider).Wait();
+        }
+
+        private async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<PMStudioUser>>();
+            string[] roleNames = { SystemRoles.Administrator, SystemRoles.Member };
+            IdentityResult roleResult;
+
+            foreach (var roleName in roleNames)
+            {
+                var roleExist = await roleManager.RoleExistsAsync(roleName);
+                if (!roleExist)
+                {
+                    roleResult = await roleManager.CreateAsync(new IdentityRole(roleName));
+                }
+            }
+
+            var _user = await userManager.FindByEmailAsync("fandrelop@gmail.com");
+
+            if (_user != null)
+            {
+                await userManager.AddToRoleAsync(_user, SystemRoles.Administrator);
+            }
         }
     }
 }

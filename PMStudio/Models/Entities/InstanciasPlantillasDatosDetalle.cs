@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PMStudio.Models.Entities
 {
@@ -18,6 +19,8 @@ namespace PMStudio.Models.Entities
         public DateTime? DatoFecha { get; set; }
         public long? DatoNumerico { get; set; }
         public decimal? DatoDecimal { get; set; }
+        [NotMapped]
+        public int IdLinkHelper { get; set; }
 
         public virtual InstanciasPlantillas InstanciaplantillaNavigation { get; set; }
         public virtual DatoTipo IdDatoTipoNavigation { get; set; }

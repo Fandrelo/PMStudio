@@ -28,6 +28,9 @@
             <th>
                 Creada en
             </th>
+            <th>
+                Completados
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -42,14 +45,7 @@
                     @Html.DisplayFor(modelItem => item.Descripcion)
                 </td>
                 <td>
-                    @if (item.Estado == "0")
-                    {
-                        @Html.Raw("Pendiente")
-                    }
-                    else
-                    {
-                        @Html.Raw("Finalizada")
-                    }
+                    @Html.DisplayFor(modelItem => item.Estado)
                 </td>
                 <td>
                     @if (item.Iniciada == "0")
@@ -63,6 +59,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Fecha)
+                </td>
+                <td>
+                    @item.DoneSteps/@item.InstanciasPlantillasPasosDetalle.Count
                 </td>
                 <td>
                     <a class="btn btn-primary" href="#" onclick="openModal(@item.IdInstanciaPlantilla, '@item.Nombre')">Acciones</a>

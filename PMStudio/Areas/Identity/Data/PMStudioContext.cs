@@ -25,6 +25,7 @@ namespace PMStudio.Models
         public virtual DbSet<Pasos> Pasos { get; set; }
         public virtual DbSet<PasosInstancias> PasosInstancias { get; set; }
         public virtual DbSet<PasosInstanciasDatosDetalle> PasosInstanciasDatosDetalle { get; set; }
+        public virtual DbSet<PasosPlantillasCamposDetalle> PasosPlantillasCamposDetalle { get; set; }
         public virtual DbSet<PasosUsuariosDetalle> PasosUsuariosDetalle { get; set; }
         public virtual DbSet<Plantillas> Plantillas { get; set; }
         public virtual DbSet<PlantillasCamposDetalle> PlantillasCamposDetalle { get; set; }
@@ -60,7 +61,8 @@ namespace PMStudio.Models
                 entity.HasData(
                     new Acciones { IdAccion = 1, Nombre = "En Espera" },
                     new Acciones { IdAccion = 2, Nombre = "Iniciado" },
-                    new Acciones { IdAccion = 3, Nombre = "Finalizado" }
+                    new Acciones { IdAccion = 3, Nombre = "Finalizado" },
+                    new Acciones { IdAccion = 4, Nombre = "Rechazado" }
                 );
             });
 
@@ -103,9 +105,9 @@ namespace PMStudio.Models
                     .HasColumnType("VARCHAR2(100)");
 
                 entity.Property(e => e.Estado)
-                    .IsRequired()
+                    .IsRequired(false)
                     .HasColumnName("ESTADO")
-                    .HasColumnType("CHAR(1)");
+                    .HasColumnType("VARCHAR2(50)");
 
                 entity.Property(e => e.Iniciada)
                     .IsRequired()
@@ -236,10 +238,16 @@ namespace PMStudio.Models
                     .HasColumnType("VARCHAR2(50)");
 
                 entity.Property(e => e.FechaInicio)
+                    .IsRequired(false)
                     .HasColumnName("FECHA_INICIO");
 
                 entity.Property(e => e.FechaFin)
+                    .IsRequired(false)
                     .HasColumnName("FECHA_FIN");
+
+                entity.Property(e => e.Numero)
+                    .IsRequired(false)
+                    .HasColumnName("NUMERO");
             });
 
             builder.Entity<PasosInstancias>(entity =>
@@ -261,6 +269,17 @@ namespace PMStudio.Models
                     .IsRequired()
                     .HasColumnName("NOMBRE")
                     .HasColumnType("VARCHAR2(50)");
+
+                entity.Property(e => e.FechaInicio)
+                    .IsRequired(false)
+                    .HasColumnName("FECHA_INICIO");
+
+                entity.Property(e => e.FechaFin)
+                    .IsRequired(false)
+                    .HasColumnName("FECHA_FIN");
+
+                entity.Property(e => e.Numero)
+                    .HasColumnName("NUMERO");
             });
 
             builder.Entity<PasosInstanciasDatosDetalle>(entity =>
@@ -280,9 +299,8 @@ namespace PMStudio.Models
                     .HasColumnName("PASO");
 
                 entity.Property(e => e.SoloLectura)
-                    .IsRequired()
-                    .HasColumnName("SOLO_LECTURA")
-                    .HasColumnType("CHAR(1)");
+                    //.IsRequired(false)
+                    .HasColumnName("SOLO_LECTURA");
 
                 entity.HasOne(d => d.InstanciaPlantillaDatoNavigation)
                     .WithMany(p => p.PasosInstanciasDatosDetalle)
@@ -290,6 +308,36 @@ namespace PMStudio.Models
 
                 entity.HasOne(d => d.PasoNavigation)
                     .WithMany(p => p.PasosInstanciasDatosDetalle)
+                    .HasForeignKey(d => d.Paso)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+            });
+
+            builder.Entity<PasosPlantillasCamposDetalle>(entity =>
+            {
+                entity.HasKey(e => e.IdPasosPlantillasDatos);
+
+                entity.ToTable("PASOS_PLANTILLAS_DATOS_DETALLE");
+
+                entity.Property(e => e.IdPasosPlantillasDatos)
+                    .HasColumnName("ID_PASOS_INSTANCIAS_DATOS")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.PlantillaCampo)
+                    .HasColumnName("PLANTILLA_CAMPO");
+
+                entity.Property(e => e.Paso)
+                    .HasColumnName("PASO");
+
+                entity.Property(e => e.SoloLectura)
+                    //.IsRequired(false)
+                    .HasColumnName("SOLO_LECTURA");
+
+                entity.HasOne(d => d.PlantillaCampoNavigation)
+                    .WithMany(p => p.PasosPlantillasCamposDetalle)
+                    .HasForeignKey(d => d.PlantillaCampo);
+
+                entity.HasOne(d => d.PasoNavigation)
+                    .WithMany(p => p.PasosPlantillasCamposDetalle)
                     .HasForeignKey(d => d.Paso)
                     .OnDelete(DeleteBehavior.ClientSetNull);
             });

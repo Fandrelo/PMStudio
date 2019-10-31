@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PMStudio.Models;
 using PMStudio.Models.Entities;
+using PMStudio.Utils;
 
 namespace PMStudio.Controllers
 {
+    [Authorize(Roles = SystemRoles.Administrator)]
     public class InstanciasPlantillasController : Controller
     {
         private readonly PMStudioContext _context;
@@ -22,8 +25,23 @@ namespace PMStudio.Controllers
         // GET: InstanciasPlantillas
         public async Task<IActionResult> Index()
         {
-            var pMStudioContext = _context.InstanciasPlantillas.Include(i => i.AspNetUserNavigation);
-            return View(await pMStudioContext.ToListAsync());
+            var instances = await _context.InstanciasPlantillas
+                .Include(i => i.AspNetUserNavigation)
+                .Include(i => i.InstanciasPlantillasPasosDetalle)
+                .ToListAsync();
+            foreach (var item in instances)
+            {
+                var doneSteps = 0;
+                foreach (var step in item.InstanciasPlantillasPasosDetalle)
+                {
+                    if(step.Estado.GetValueOrDefault() == 3)
+                    {
+                        doneSteps++;
+                    }
+                }
+                item.DoneSteps = doneSteps;
+            }
+            return View(instances);
         }
 
         // GET: InstanciasPlantillas/Details/5
@@ -36,6 +54,7 @@ namespace PMStudio.Controllers
 
             var instanciasPlantillas = await _context.InstanciasPlantillas
                 .Include(i => i.AspNetUserNavigation)
+                .Include(i => i.InstanciasPlantillasPasosDetalle)
                 .FirstOrDefaultAsync(m => m.IdInstanciaPlantilla == id);
             if (instanciasPlantillas == null)
             {
@@ -103,7 +122,7 @@ namespace PMStudio.Controllers
         {
             if (ModelState.IsValid)
             {
-                assignViewModel.Items.ForEach(a => a.SoloLectura = "0");
+                assignViewModel.Items.ForEach(a => a.SoloLectura = false);
                 _context.PasosInstanciasDatosDetalle.AddRange(assignViewModel.Items);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Asignacion Pasos <> Datos exitoso";

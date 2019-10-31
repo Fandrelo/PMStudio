@@ -6,6 +6,10 @@ namespace PMStudio.Models.Entities
 {
     public partial class PlantillasCamposDetalle
     {
+        public PlantillasCamposDetalle()
+        {
+            PasosPlantillasCamposDetalle = new List<PasosPlantillasCamposDetalle>();
+        }
         public int IdPlantillaCampo { get; set; }
         public int Plantilla { get; set; }
         [DisplayName("Tipo de Dato")]
@@ -15,5 +19,6 @@ namespace PMStudio.Models.Entities
 
         public virtual DatoTipo IdDatoTipoNavigation { get; set; }
         public virtual Plantillas PlantillaNavigation { get; set; }
+        public virtual List<PasosPlantillasCamposDetalle> PasosPlantillasCamposDetalle { get; set; }
     }
 }

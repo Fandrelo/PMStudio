@@ -7,11 +7,18 @@
 <h1>@ViewData["Title"]</h1>
 
 <partial name="_Success" />
+<partial name="_Warning" />
 
 <div class="">
     <table class="table">
         <thead>
             <tr>
+                <th>
+                    Plantilla
+                </th>
+                <th>
+                    #
+                </th>
                 <th>
                     Nombre
                 </th>
@@ -27,20 +34,28 @@
         <tbody>
             @foreach (var item in Model)
             {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PlantillaPasoDetalleNavigation.PasoNavigation.Nombre)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PlantillaPasoDetalleNavigation.PasoNavigation.Descripcion)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PlantillaPasoDetalleNavigation.EstadoNavigation.Nombre)
-                </td>
-                <td>
-                    <a class="btn btn-success" asp-action="ManageUserSteps" asp-route-id="@item.IdPasosUsuarios">Gestionar</a>
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PlantillaPasoDetalleNavigation.InstanciaPlantillaNavigation.Nombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PlantillaPasoDetalleNavigation.PasoNavigation.Numero)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PlantillaPasoDetalleNavigation.PasoNavigation.Nombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PlantillaPasoDetalleNavigation.PasoNavigation.Descripcion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PlantillaPasoDetalleNavigation.EstadoNavigation.Nombre)
+                    </td>
+                    <td>
+                        <a class="btn btn-primary" asp-action="ManageUserSteps" asp-route-id="@item.IdPasosUsuarios">Gestionar</a>
+                        <a class="btn btn-success" asp-action="RedirectUserSteps" asp-route-id="@item.IdPasosUsuarios">Redireccionar</a>
+                        <a class="btn btn-danger" asp-action="DenyUserSteps" asp-route-id="@item.IdPasosUsuarios">Rechazar</a>
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
